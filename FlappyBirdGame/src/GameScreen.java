@@ -1,57 +1,68 @@
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 public class GameScreen extends JPanel {
+
     private Bird bird;
-    private ArrayList<Rectangle> pipes;
-    private Game game;
-    private Image pipeImage;
+    private ArrayList<Rectangle> rects;
+    private Game fb;
+    private Font scoreFont, pauseFont;
+    public static final Color bg = new Color(113, 197, 207);
+    private Image pipeHead, pipeLength;
 
-    public GameScreen(Game game, Bird bird, ArrayList<Rectangle> pipes) {
-        this.game = game;
+    public GameScreen(Game fb, Bird bird, ArrayList<Rectangle> rects) {
+        this.fb = fb;
         this.bird = bird;
-        this.pipes = pipes;
-        setPipe();
-    }
+        this.rects = rects;
+        scoreFont = new Font("Comic Sans MS", Font.BOLD, 18);
+        pauseFont = new Font("Arial", Font.BOLD, 48);
 
-    public void setPipe() {
         try {
-            this.pipeImage = ImageIO.read(new File("FlappyBirdGame/src/flappy-bird-pipe.png"));
-        } catch(IOException e){
-                e.printStackTrace();
-            }
+            pipeHead = ImageIO.read(new File("FlappyBirdGame/src/pipeHead.png"));
+            pipeLength = ImageIO.read(new File("FlappyBirdGame/src/pipe_part.png"));
         }
-
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
     public void paintComponent(Graphics g) {
-        g.setColor(new Color (113, 197, 207));
-        g.fillRect(0, 0, 640, 480);
+        g.setColor(bg);
+        g.fillRect(0,0, 640, 480);
         bird.update(g);
         g.setColor(Color.RED);
-        for (Rectangle pipe : pipes) {
+        for(Rectangle r : rects) {
             Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(new Color(113, 191, 46));
+            g2.setColor(Color.GREEN);
             AffineTransform old = g2.getTransform();
-            g2.translate(pipe.x + 25, pipe.y + 15);
-            if (pipe.y < 240) {
-                g2.translate(0, pipe.height);
+            g2.translate(r.x+ 25, r.y+15);
+            if(r.y < 240) {
+                g2.translate(0, r.height);
                 g2.rotate(Math.PI);
-                g2.drawImage(pipeImage, -25, -15, 50, 30, null);
-                g2.transform(old);
             }
-            g.setFont(new Font("04B_19__.TTF", Font.BOLD, 18));
-            g.setColor(new Color(101, 78, 86));
-            g.drawString("Score: " + game.getScore(), 10, 20);
-            if (game.paused()) {
-                g.setFont(new Font("font.ttf", Font.BOLD, 48));
-                g.setColor(new Color(0, 0, 0, 170));
-                g.drawString("Paused", 220, 140);
-                g.drawString("Press Space to Begin", 20, 290);
-            }
+            g2.drawImage(pipeHead, -25, -15, 50, 30, null);
+            g2.drawImage(pipeLength, -25, 15, 50, r.height, null);
+            g2.setTransform(old);
+        }
+        g.setFont(scoreFont);
+        g.setColor(Color.BLACK);
+        g.drawString("Score: "+fb.getScore(), 10, 20);
+
+        if(fb.paused()) {
+            g.setFont(pauseFont);
+            g.setColor(new Color(0,0,0,170));
+            g.drawString("PAUSED", 220, 140);
+            g.drawString("PRESS SPACE TO BEGIN", 20, 290);
         }
     }
 }
