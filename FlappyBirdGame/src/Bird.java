@@ -4,15 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class Bird {
-    private float xPosition;
-    private float yPosition;
+    public float xPosition;
+    public float yPosition;
     private float xVelocity;
     private float yVelocity;
     private Image bird;
 
-    public Bird(int width, int height) throws IOException {
-        this.xPosition = width / 2;
-        this.yPosition = height / 2;
+    public Bird() throws IOException {
+        this.xPosition = 320;
+        this.yPosition = 240;
         setBird();
     }
 
